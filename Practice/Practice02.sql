@@ -52,3 +52,24 @@ select        job_title,
 from          jobs
 order by      max_salary - min_salary desc;
 
+--문제 9
+select        manager_id,
+              round(avg(salary),0),
+              min(salary),
+              max(salary)
+from          employees
+where         hire_date >= '2005-01-01'
+group by      manager_id
+having        round(avg(salary),0) >= 5000
+order by      round(avg(salary),0) desc;
+
+--문제 10
+select        first_name,
+              hire_date,
+              case when hire_date <= '02/12/31' then '창립멤버'
+                   when hire_date <= '03/12/31' then '03년입사'
+                   when hire_date <= '04/12/31' then '04년입사'
+              else '상장이후입사'
+              end optDate
+from          employees
+order by      hire_date asc;
