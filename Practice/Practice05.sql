@@ -116,3 +116,78 @@ and hire_date = (select max(hire_date)
 /*문제7
 평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 
 이름(firt_name), 성(last_name)과  업무(job_title), 연봉(salary)을 조회하시오.*/
+
+select em.employee_id,
+       em.first_name || em.last_name 이름,
+       jo.job_title,
+       em.salary
+from employees em, jobs jo, (select rownum ro,
+                                   department_id
+                             from (select department_id,
+                                         round(avg(salary),0) av
+                                  from employees
+                                  group by department_id
+                                  order by av desc)) ma
+where em.job_id = jo.job_id
+and em.department_id = ma.department_id
+and ma.ro = 1;
+
+/*문제8
+평균 급여(salary)가 가장 높은 부서는? */
+select department_name
+from departments de, (select rownum ro,
+                             department_id
+                      from (select department_id,
+                                   round(avg(salary),0) av
+                            from employees
+                            group by department_id
+                            order by av desc)) ma
+where de.department_id = ma.department_id
+and ma.ro = 1;
+
+/*문제9
+평균 급여(salary)가 가장 높은 지역은?  */
+select r.region_name
+from (
+      select rownum ro,
+             re.region_name
+      from (
+            select department_id,
+                   round(avg(salary),0) av
+            from employees
+            group by department_id
+            order by av desc
+            ) avg_sa, 
+            departments de, countries co, locations lo, regions re
+      where avg_sa.department_id = de.department_id 
+      and   de.location_id = lo.location_id
+      and   lo.country_id = co.country_id
+      and   co.region_id = re.region_id
+      ) r
+where r.ro = 1;
+
+/*문제10
+평균 급여(salary)가 가장 높은 업무는?  */
+select job_title
+from (
+      select rownum ro,
+             job_title
+      from (
+            select job_title,
+                   round(avg(salary),0) av
+            from employees em, jobs jo
+            where em.job_id = jo.job_id
+            group by job_title
+            order by av desc
+            )
+      )
+where ro = 1;
+
+
+
+
+
+
+
+
+
